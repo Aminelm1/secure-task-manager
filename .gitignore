@@ -4,3 +4,7 @@ __pycache__/
 .env
 .idea/
 .vscode/
+secure-task-api.tar
+
+# Kubernetes secrets
+k8s/secrets.yaml

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from app.auth import get_current_user , require_role
 
 from app.database import Base, engine, SessionLocal
 from app.models import Task
@@ -43,7 +44,8 @@ def health():
 
 
 @app.post("/tasks")
-def create_task(task: TaskCreate, db: Session = Depends(get_db)):
+def create_task(task: TaskCreate, db: Session = Depends(get_db) ,     user=Depends(get_current_user)
+):
     new_task = Task(
         title=task.title
     )
@@ -56,15 +58,27 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):
 
 
 @app.get("/tasks")
-def get_tasks(db: Session = Depends(get_db)):
+def get_tasks(db: Session = Depends(get_db)
+
+           , user=Depends(require_role("user"))  ):
+    
     return db.query(Task).all()
 
+@app.get("/admin")
+def admin_only(
+    user=Depends(require_role("admin"))
+):
+    return {
+        "message": "Welcome admin",
+        "username": user.get("preferred_username")
+    }
 
 @app.put("/tasks/{task_id}")
 def update_task(
     task_id: int,
     task: TaskUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db) ,     user=Depends(get_current_user)
+
 ):
     db_task = db.query(Task).filter(Task.id == task_id).first()
 
@@ -81,7 +95,8 @@ def update_task(
 
 
 @app.delete("/tasks/{task_id}")
-def delete_task(task_id: int, db: Session = Depends(get_db)):
+def delete_task(task_id: int, db: Session = Depends(get_db) ,     user=Depends(get_current_user)
+):
     db_task = db.query(Task).filter(Task.id == task_id).first()
 
     if not db_task:
