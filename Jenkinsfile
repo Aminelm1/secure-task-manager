@@ -15,6 +15,7 @@ pipeline {
                 docker run --rm \
                   --volumes-from jenkins \
                   -e TESTING=1 \
+                  -e DATABASE_URL="postgresql+psycopg://test:test@localhost:5432/testdb" \
                   -w "$WORKSPACE" \
                   python:3.12-slim \
                   sh -c "pip install -r requirements.txt && python -m pytest -v"
