@@ -22,5 +22,17 @@ pipeline {
                 '''
             }
         }
+
+stage('Build Docker image') {
+    steps {
+        sh '''
+        docker build \
+          -t secure-task-api:${BUILD_NUMBER} \
+          -t secure-task-api:latest \
+          .
+        '''
+    }
+}
+
     }
 }
