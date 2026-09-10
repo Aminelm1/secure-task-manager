@@ -61,5 +61,23 @@ stage('Push Docker image to GHCR') {
     }
 }
 
+stage('Deploy to Kubernetes') {
+    steps {
+        sh '''
+            kubectl \
+              --server=https://host.docker.internal:53652 \
+              --insecure-skip-tls-verify=true \
+              set image deployment/secure-task-api \
+              api=ghcr.io/aminelm1/secure-task-api:${BUILD_NUMBER}
+
+            kubectl \
+              --server=https://host.docker.internal:53652 \
+              --insecure-skip-tls-verify=true \
+              rollout status deployment/secure-task-api \
+              --timeout=120s
+        '''
+    }
+}
+
     }
 }
