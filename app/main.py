@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
@@ -13,8 +14,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
-Base.metadata.create_all(bind=engine)
-
+if os.getenv("TESTING") != "1":
+    Base.metadata.create_all(bind=engine)
 
 class TaskCreate(BaseModel):
     title: str
