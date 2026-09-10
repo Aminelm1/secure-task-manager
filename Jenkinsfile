@@ -9,20 +9,15 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
-            steps {
-                sh '''
-                python3 -m pip install --upgrade pip
-                python3 -m pip install -r requirements.txt
-                '''
-            }
-        }
-
         stage('Run tests') {
             steps {
                 sh '''
-                export TESTING=1
-                python3 -m pytest -v
+                docker run --rm \
+                  -e TESTING=1 \
+                  -v "$WORKSPACE:/app" \
+                  -w /app \
+                  python:3.12-slim \
+                  sh -c "pip install -r requirements.txt && python -m pytest -v"
                 '''
             }
         }
