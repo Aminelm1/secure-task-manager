@@ -34,5 +34,32 @@ stage('Build Docker image') {
     }
 }
 
+stage('Push Docker image to GHCR') {
+    steps {
+        withCredentials([
+            usernamePassword(
+                credentialsId: 'github-ghcr',
+                usernameVariable: 'GHCR_USER',
+                passwordVariable: 'GHCR_TOKEN'
+            )
+        ]) {
+            sh '''
+                echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+
+                docker tag secure-task-api:${BUILD_NUMBER} \
+                  ghcr.io/aminelm1/secure-task-api:${BUILD_NUMBER}
+
+                docker tag secure-task-api:latest \
+                  ghcr.io/aminelm1/secure-task-api:latest
+
+                docker push ghcr.io/aminelm1/secure-task-api:${BUILD_NUMBER}
+                docker push ghcr.io/aminelm1/secure-task-api:latest
+
+                docker logout ghcr.io
+            '''
+        }
+    }
+}
+
     }
 }
