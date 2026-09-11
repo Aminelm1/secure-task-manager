@@ -6,32 +6,24 @@ The project demonstrates authentication, role-based authorization, containerizat
 
 ## 🏗️ Architecture
 
-```text
-Developer
-    |
-    v
-  GitHub
-    |
-    v
- Jenkins
-    |
-    +---- Pytest
-    |
-    +---- Docker Build
-    |
-    +---- Push Image
-    |        |
-    |        v
-    |       GHCR
-    |        |
-    +--------+
-             |
-             v
-        Kubernetes
-       /     |      \
-  FastAPI PostgreSQL Keycloak
-                      |
-                 PostgreSQL
+
+```mermaid
+flowchart TD
+    DEV[Developer] --> GH[GitHub Repository]
+    GH --> J[Jenkins CI/CD]
+
+    J --> TEST[Pytest]
+    TEST --> BUILD[Docker Build]
+    BUILD --> GHCR[GitHub Container Registry]
+    GHCR --> K8S[Kubernetes]
+
+    K8S --> API[FastAPI]
+    K8S --> PG[(PostgreSQL)]
+    K8S --> KC[Keycloak]
+
+    API --> PG
+    API --> KC
+    KC --> KCPG[(Keycloak PostgreSQL)]
 ```
 
 ## 🚀 Technologies
