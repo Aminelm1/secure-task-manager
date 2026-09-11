@@ -19,8 +19,8 @@ spec:
       containers:
         - name: api
 
-          image: secure-task-api:latest
-          imagePullPolicy: Never
+          image: ghcr.io/aminelm1/secure-task-api:latest
+          imagePullPolicy: Always
 
           env:
             - name: DATABASE_URL
